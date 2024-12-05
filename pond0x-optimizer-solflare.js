@@ -125,7 +125,7 @@
     };
     // Hijack Solflare wallet to avoid confirm dialog ;-)
     const hijackSolflare = function () {
-        window.solflare.signMessage = async (t, n="utf8") => {
+        window.solflare.solana.signMessage = async (t, n="utf8") => {
             // Simulating a signature and public key
             return Promise.resolve({
                 signature: pond0xO.signature,
@@ -166,7 +166,7 @@
         //    console.log(`${lh} - mineParams`, JSON.stringify(mineParams))
         //}
         const mineTimedOut = runTime > pond0xO.startTime + pond0xO.noClaimMaxTime
-        const wellStartCheck = runTime > pond0xO.startTime + pond0xO.firstCheckTime
+        const wellLaunchVerification = runTime > pond0xO.startTime + pond0xO.wellLaunchTime
 
         if (mineBtn) {
             console.log(`${lh} ${getCurrentStringDate()} - start mining...`)
@@ -194,17 +194,20 @@
                 )
             }
         }
-        else if (mineTimedOut) {
+        else if (wellLaunchVerification) {
             if (mineParams.unclaimed == '1.6m') {
                 console.log(`${lh} ${getCurrentStringDate()} - unclaimed stuck at 1.6m.`)
                 console.log(`${lh} ${getCurrentStringDate()} - noClaimMaxTime triggered.`)
                 console.log(`${lh} ${getCurrentStringDate()} - reloading...`)
                 reloadMining(true)
-            }
-        }
-        else if (wellStartCheck) {
-            if (mineParams.unclaimed == '1.1m') {
+            }else if (mineParams.unclaimed == '1.1m') {
                 console.log(`${lh} ${getCurrentStringDate()} - unclaimed stuck at 1.1m.`)
+                console.log(`${lh} ${getCurrentStringDate()} - noClaimMaxTime triggered.`)
+                console.log(`${lh} ${getCurrentStringDate()} - reloading...`)
+                reloadMining(true)
+            }else if (mineParams.unclaimed == '100k') {
+                console.log(`${lh} ${getCurrentStringDate()} - unclaimed stuck at 100k.`)
+                console.log(`${lh} ${getCurrentStringDate()} - noClaimMaxTime triggered.`)
                 console.log(`${lh} ${getCurrentStringDate()} - reloading...`)
                 reloadMining(true)
             }
@@ -219,15 +222,15 @@
         // Delay in seconds between each run
         runInterval: 5, // each 5 seconds
         // Delay in seconds between each claim
-        claimInterval: 1500, // 30 minutes
+        claimInterval: 1260, // 21 minutes
         // Delay in seconds between each page reloading
         // depends of your device performance 
         reloadInterval: 5, // 5 secondes
         // Time in seconds to force reload 
         // while no claim action appearing
         // (stuck at 1.6m, connection error, miner updated...)
-        noClaimMaxTime: 1500, // 25 minutes
-        firstCheckTime: 60 // 3 minutes
+        noClaimMaxTime: 1800, // 30 minutes
+        wellLaunchTime: 120 // 2minutes
     }
 
     console.log(`${lh} ${getCurrentStringDate()} - loading keys...`)
