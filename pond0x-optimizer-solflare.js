@@ -223,7 +223,7 @@
         // while no claim action appearing
         // (stuck at 1.6m, connection error, miner updated...)
         noClaimMaxTime: 1500, // 25 minutes
-        firstCheckTime: 180 // 3 minutes
+        firstCheckTime: 120 // 2 minutes
     }
 
     console.log(`${lh} - loading keys...`)
