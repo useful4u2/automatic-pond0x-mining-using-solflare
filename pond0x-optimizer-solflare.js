@@ -222,7 +222,7 @@
         // Time in seconds to force reload 
         // while no claim action appearing
         // (stuck at 1.6m, connection error, miner updated...)
-        noClaimMaxTime: 1500 // 25 minutes
+        noClaimMaxTime: 1500, // 25 minutes
         firstCheckTime: 180 // 3 minutes
     }
 
