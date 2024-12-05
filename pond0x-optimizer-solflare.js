@@ -75,22 +75,6 @@
         }
         return params
     }
-    // Get signin signature key from phantom wallet 
-    const getSignature = async function () {
-
-        const result = await phantom.solana.signMessage(
-            new Buffer('Securely connect xMiner to network'),
-            'utf8'
-        )
-        window.pond0xO.signature = result.signature
-        window.pond0xO.publicKey = result.publicKey
-
-        const signatureText = new TextDecoder().decode(result.signature)
-        const publicKeyText = result.publicKey.toString()
-
-        console.log(`${lh} - signature: ${signatureText}`)
-        console.log(`${lh} - publicKey: ${publicKeyText}`)
-    }
     async function getProvider() {
         // Check if the window object exists (ensuring this runs in a browser)
         if (typeof window === 'undefined') {
@@ -133,16 +117,6 @@
         // Log the signature and public key
         console.log(`${lh} - signature: ${signatureText}`);
         console.log(`${lh} - publicKey: ${publicKeyText}`);
-    };
-    
-    // Hijack phantom wallet to avoid confirm dialog ;-)
-    const hijackPhantom = function () {
-        window.phantom.solana.signMessage = async (t, n="utf8") => {
-            return Promise.resolve({
-                signature: pond0xO.signature,
-                publicKey: pond0xO.publicKey
-            })
-        }
     };
     // Hijack Solflare wallet to avoid confirm dialog ;-)
     const hijackSolflare = function () {
@@ -188,6 +162,7 @@
         //    console.log(`${lh} - mineParams`, JSON.stringify(mineParams))
         //}
         const mineTimedOut = runTime > pond0xO.startTime + pond0xO.noClaimMaxTime
+        const wellStartCheck = runTime > pond0xO.startTime + pond0xO.firstCheckTime
 
         if (mineBtn) {
             console.log(`${lh} - start mining...`)
@@ -223,6 +198,13 @@
                 reloadMining(true)
             }
         }
+        else if (wellStartCheck) {
+            if (mineParams.unclaimed == '1.1m') {
+                console.log(`${lh} - unclaimed stuck at 1.1m.`)
+                console.log(`${lh} - reloading...`)
+                reloadMining(true)
+            }
+        }
     }
     const lh = `[pond0x-optimizer]`
 
@@ -241,6 +223,7 @@
         // while no claim action appearing
         // (stuck at 1.6m, connection error, miner updated...)
         noClaimMaxTime: 1500 // 25 minutes
+        firstCheckTime: 180 // 3 minutes
     }
 
     console.log(`${lh} - loading keys...`)
@@ -249,9 +232,7 @@
     console.log(`${lh} - settings`, JSON.stringify(pond0xO))
     hijackSolflare()
     console.log(`${lh} - solflare hijacked.`)
-
     reloadMining(false)
-  
     setInterval(
         run,
         getTimeMS(pond0xO.runInterval)
