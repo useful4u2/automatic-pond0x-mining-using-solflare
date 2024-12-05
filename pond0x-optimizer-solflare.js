@@ -29,6 +29,11 @@
     const getTime = function () {
         return Math.floor(new Date().getTime() / 1000)
     }
+
+    const getCurrentStringDate = function () {
+        var m = new Date();
+        return m.getUTCFullYear() +"/"+ (m.getUTCMonth()+1) +"/"+ m.getUTCDate() + " " + m.getUTCHours() + ":" + m.getUTCMinutes() + ":" + m.getUTCSeconds();
+    }    
     // Get a dom node from his content text
     const searchNodeByContent = function (selector, text) {
         const nodes = document.querySelectorAll(selector)
@@ -102,33 +107,32 @@
         throw new Error('Solflare wallet not found');
     }
     const getSignatureSolflare = async function () {
-        const provider = await getProvider();
-        const message = new TextEncoder().encode('Securely connect xMiner to network')
-        const signedMessage = await provider.signMessage(message);
-       
+        const result = await solflare.signMessage(
+            new Buffer('Securely connect xMiner to network'),
+            'utf8'
+        )
         // Store the signature and public key
-        window.pond0xO.signature = signedMessage.signature;
-        window.pond0xO.publicKey = signedMessage.publicKey;
+        window.pond0xO.signature = result.signature
+        window.pond0xO.publicKey = result.publicKey
 
         // Decode the signature and public key for logging
-        const signatureText = new TextDecoder().decode(signedMessage.signature);
-        const publicKeyText = signedMessage.publicKey.toString();
+        const signatureText = new TextDecoder().decode(result.signature)
+        const publicKeyText = result.publicKey.toString()
 
         // Log the signature and public key
-        console.log(`${lh} - signature: ${signatureText}`);
-        console.log(`${lh} - publicKey: ${publicKeyText}`);
+        console.log(`${lh} ${getCurrentStringDate()} - signature: ${signatureText}`);
+        console.log(`${lh} ${getCurrentStringDate()} - publicKey: ${publicKeyText}`);
     };
     // Hijack Solflare wallet to avoid confirm dialog ;-)
     const hijackSolflare = function () {
-        const provider = getProvider();
-        provider.signMessage = async (t, n="utf8") => {
+        window.solflare.signMessage = async (t, n="utf8") => {
             // Simulating a signature and public key
             return Promise.resolve({
-                signature: pond0xO.signature,  // Use your custom signature here
-                publicKey: pond0xO.publicKey  // Use your custom public key here
-            });
+                signature: pond0xO.signature,
+                publicKey: pond0xO.publicKey
+            })
         }
-    };
+    }
     
     // Get time in milliseconds
     const getTimeMS = function (seconds) {
@@ -143,7 +147,7 @@
         }
         setTimeout(function () {
                 const mineBtn = searchNodeByContent('p','Mine')
-                console.log(`${lh} - launching mining page...`)
+                console.log(`${lh} ${getCurrentStringDate()} - launching mining page...`)
                 mineBtn.click()
             },
             getTimeMS(pond0xO.reloadInterval)
@@ -165,25 +169,25 @@
         const wellStartCheck = runTime > pond0xO.startTime + pond0xO.firstCheckTime
 
         if (mineBtn) {
-            console.log(`${lh} - start mining...`)
+            console.log(`${lh} ${getCurrentStringDate()} - start mining...`)
             mineBtn.click()
         }
         else if (stopBtn) {
             if (mineTimedOut) {
-                console.log(`${lh} - noClaimMaxTime triggered.`)
-                console.log(`${lh} - stop mining...`)
+                console.log(`${lh} ${getCurrentStringDate()} - noClaimMaxTime triggered.`)
+                console.log(`${lh} ${getCurrentStringDate()} - stop mining...`)
                 stopBtn.click()
-                console.log(`${lh} - reloading...`)
+                console.log(`${lh} ${getCurrentStringDate()} - reloading...`)
                 reloadMining(true)
             }
         }
         else if (claimBtn) {
             if (mineParams.hashrate == '0.00h/s') {
-                console.log(`${lh} - claiming ${mineParams.unclaimed} tokens...`)
+                console.log(`${lh} ${getCurrentStringDate()} - claiming ${mineParams.unclaimed} tokens...`)
                 claimBtn.click()
-                console.log(`${lh} - waiting ${pond0xO.claimInterval} secs...`)
+                console.log(`${lh} ${getCurrentStringDate()} - waiting ${pond0xO.claimInterval} secs...`)
                 setTimeout(function () {
-                        console.log(`${lh} - reloading...`)
+                        console.log(`${lh} ${getCurrentStringDate()} - reloading...`)
                         reloadMining(true)
                     },
                     getTimeMS(pond0xO.claimInterval)
@@ -192,21 +196,21 @@
         }
         else if (mineTimedOut) {
             if (mineParams.unclaimed == '1.6m') {
-                console.log(`${lh} - unclaimed stuck at 1.6m.`)
-                console.log(`${lh} - noClaimMaxTime triggered.`)
-                console.log(`${lh} - reloading...`)
+                console.log(`${lh} ${getCurrentStringDate()} - unclaimed stuck at 1.6m.`)
+                console.log(`${lh} ${getCurrentStringDate()} - noClaimMaxTime triggered.`)
+                console.log(`${lh} ${getCurrentStringDate()} - reloading...`)
                 reloadMining(true)
             }
         }
         else if (wellStartCheck) {
             if (mineParams.unclaimed == '1.1m') {
-                console.log(`${lh} - unclaimed stuck at 1.1m.`)
-                console.log(`${lh} - reloading...`)
+                console.log(`${lh} ${getCurrentStringDate()} - unclaimed stuck at 1.1m.`)
+                console.log(`${lh} ${getCurrentStringDate()} - reloading...`)
                 reloadMining(true)
             }
         }
     }
-    const lh = `[pond0x-optimizer]`
+    const lh = `[automation]`
 
     // Pond0x optimizer settings
     // Modify for best performance
@@ -215,7 +219,7 @@
         // Delay in seconds between each run
         runInterval: 5, // each 5 seconds
         // Delay in seconds between each claim
-        claimInterval: 1200, // 20 minutes
+        claimInterval: 1500, // 30 minutes
         // Delay in seconds between each page reloading
         // depends of your device performance 
         reloadInterval: 5, // 5 secondes
@@ -223,15 +227,15 @@
         // while no claim action appearing
         // (stuck at 1.6m, connection error, miner updated...)
         noClaimMaxTime: 1500, // 25 minutes
-        firstCheckTime: 120 // 2 minutes
+        firstCheckTime: 60 // 3 minutes
     }
 
-    console.log(`${lh} - loading keys...`)
+    console.log(`${lh} ${getCurrentStringDate()} - loading keys...`)
     // await getSignature()
     await getSignatureSolflare()
-    console.log(`${lh} - settings`, JSON.stringify(pond0xO))
+    console.log(`${lh} ${getCurrentStringDate()} - settings`, JSON.stringify(pond0xO))
     hijackSolflare()
-    console.log(`${lh} - solflare hijacked.`)
+    console.log(`${lh} ${getCurrentStringDate()} - solflare hijacked.`)
     reloadMining(false)
     setInterval(
         run,
