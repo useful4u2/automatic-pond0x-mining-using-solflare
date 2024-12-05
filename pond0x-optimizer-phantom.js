@@ -150,6 +150,24 @@
                 console.log(`${lh} ${getCurrentStringDate()} - reloading...`)
                 reloadMining(true)
             }
+            else if (wellLaunchVerification) {
+                if (mineParams.unclaimed == '1.6m') {
+                    console.log(`${lh} ${getCurrentStringDate()} - unclaimed stuck at 1.6m.`)
+                    console.log(`${lh} ${getCurrentStringDate()} - noClaimMaxTime triggered.`)
+                    console.log(`${lh} ${getCurrentStringDate()} - reloading...`)
+                    reloadMining(true)
+                }else if (mineParams.unclaimed == '1.1m') {
+                    console.log(`${lh} ${getCurrentStringDate()} - unclaimed stuck at 1.1m.`)
+                    console.log(`${lh} ${getCurrentStringDate()} - noClaimMaxTime triggered.`)
+                    console.log(`${lh} ${getCurrentStringDate()} - reloading...`)
+                    reloadMining(true)
+                }else if (mineParams.unclaimed == '100k') {
+                    console.log(`${lh} ${getCurrentStringDate()} - unclaimed stuck at 100k.`)
+                    console.log(`${lh} ${getCurrentStringDate()} - noClaimMaxTime triggered.`)
+                    console.log(`${lh} ${getCurrentStringDate()} - reloading...`)
+                    reloadMining(true)
+                }
+            }
         }
         else if (claimBtn) {
             if (mineParams.hashrate == '0.00h/s') {
@@ -162,24 +180,6 @@
                     },
                     getTimeMS(pond0xO.claimInterval)
                 )
-            }
-        }
-        else if (wellLaunchVerification) {
-            if (mineParams.unclaimed == '1.6m') {
-                console.log(`${lh} ${getCurrentStringDate()} - unclaimed stuck at 1.6m.`)
-                console.log(`${lh} ${getCurrentStringDate()} - noClaimMaxTime triggered.`)
-                console.log(`${lh} ${getCurrentStringDate()} - reloading...`)
-                reloadMining(true)
-            }else if (mineParams.unclaimed == '1.1m') {
-                console.log(`${lh} ${getCurrentStringDate()} - unclaimed stuck at 1.1m.`)
-                console.log(`${lh} ${getCurrentStringDate()} - noClaimMaxTime triggered.`)
-                console.log(`${lh} ${getCurrentStringDate()} - reloading...`)
-                reloadMining(true)
-            }else if (mineParams.unclaimed == '100k') {
-                console.log(`${lh} ${getCurrentStringDate()} - unclaimed stuck at 100k.`)
-                console.log(`${lh} ${getCurrentStringDate()} - noClaimMaxTime triggered.`)
-                console.log(`${lh} ${getCurrentStringDate()} - reloading...`)
-                reloadMining(true)
             }
         }
     }
