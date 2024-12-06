@@ -136,8 +136,9 @@
         //    console.log(`${lh} - mineParams`, JSON.stringify(mineParams))
         //}
         const mineTimedOut = runTime > pond0xO.startTime + pond0xO.noClaimMaxTime
-        const wellLaunchVerification = runTime > pond0xO.startTime + pond0xO.wellLaunchTime
-        console.log(`${lh} ${getCurrentStringDate()} - unclaimed ${mineParams.unclaimed} - hashrate ${mineParams.hashrate}`)
+        const notWellStartedCheck = runTime > pond0xO.startTime + pond0xO.wellLaunchTime
+        const inactiveMinerCheck = runTime > pond0xO.startTime + pond0xO.inactiveMiningTime
+
         if (mineBtn) {
             console.log(`${lh} ${getCurrentStringDate()} - start mining...`)
             mineBtn.click()
@@ -150,20 +151,20 @@
                 console.log(`${lh} ${getCurrentStringDate()} - reloading...`)
                 reloadMining(true)
             }
-            else if (wellLaunchVerification) {
+            else if (inactiveMinerCheck) {
                 if (mineParams.unclaimed == '1.6m') {
                     console.log(`${lh} ${getCurrentStringDate()} - unclaimed stuck at 1.6m.`)
-                    console.log(`${lh} ${getCurrentStringDate()} - noClaimMaxTime triggered.`)
                     console.log(`${lh} ${getCurrentStringDate()} - reloading...`)
                     reloadMining(true)
-                }else if (mineParams.unclaimed == '1.1m') {
+                }
+            }
+            else if (notWellStartedCheck) {
+                if (mineParams.unclaimed == '1.1m') {
                     console.log(`${lh} ${getCurrentStringDate()} - unclaimed stuck at 1.1m.`)
-                    console.log(`${lh} ${getCurrentStringDate()} - noClaimMaxTime triggered.`)
                     console.log(`${lh} ${getCurrentStringDate()} - reloading...`)
                     reloadMining(true)
                 }else if (mineParams.unclaimed == '100k') {
                     console.log(`${lh} ${getCurrentStringDate()} - unclaimed stuck at 100k.`)
-                    console.log(`${lh} ${getCurrentStringDate()} - noClaimMaxTime triggered.`)
                     console.log(`${lh} ${getCurrentStringDate()} - reloading...`)
                     reloadMining(true)
                 }
@@ -200,9 +201,9 @@
         // while no claim action appearing
         // (stuck at 1.6m, connection error, miner updated...)
         noClaimMaxTime: 1800, // 30 minutes
-        wellLaunchTime: 120 // 2minutes
+        wellLaunchTime: 60, // 1 minute --> 1.1M & 100K cases
+        inactiveMiningTime: 300 // 5 minutes --> 1.6M inactive miners
     }
-
     console.log(`${lh} ${getCurrentStringDate()} - loading keys...`)
     await getSignature()
     console.log(`${lh} ${getCurrentStringDate()} - settings `, JSON.stringify(pond0xO))
