@@ -137,7 +137,7 @@
         const signatureText = new TextDecoder().decode(result.signature)
         const publicKeyText = result.publicKey.toString()
 
-        console.log(`${lh} ${getCurrentStringDate()} - signature: ${signatureText}`)
+        //console.log(`${lh} ${getCurrentStringDate()} - signature: ${signatureText}`)
         console.log(`${lh} ${getCurrentStringDate()} - publicKey: ${publicKeyText}`)
     }
     // Hijack phantom wallet to avoid confirm dialog ;-)
