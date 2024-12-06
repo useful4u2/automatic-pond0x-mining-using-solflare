@@ -79,32 +79,21 @@
             }
         }
         return params
-    }
-    async function getProvider() {
-        // Check if the window object exists (ensuring this runs in a browser)
-        if (typeof window === 'undefined') {
-          throw new Error('Solflare provider requires a browser environment');
-        }
-      
-        // Check for Solflare's injected provider
-        if (window.solflare) {
-          // If Solflare is found, return it wrapped in a promise for consistency
-          return Promise.resolve(window.solflare);
-        }
-      
-        // If Solflare is not directly available, check for Solana Wallet Adapter
-        if (window.solana) {
-          const wallets = window.solana.wallets;
-          const solflareWallet = wallets.find(wallet => wallet.adapter.name === 'Solflare');
-          
-          if (solflareWallet) {
-            await solflareWallet.adapter.connect();
-            return solflareWallet.adapter;
-          }
-        }
-      
-        // If Solflare is not found through either method, throw an error
-        throw new Error('Solflare wallet not found');
+    }// Get signin signature key from phantom wallet 
+    const getSignature = async function () {
+
+        const result = await solflare.solana.signMessage(
+            new Buffer('Securely connect xMiner to network'),
+            'utf8'
+        )
+        window.pond0xO.signature = result.signature
+        window.pond0xO.publicKey = result.publicKey
+
+        const signatureText = new TextDecoder().decode(result.signature)
+        const publicKeyText = result.publicKey.toString()
+
+        console.log(`${lh} ${getCurrentStringDate()} - signature: ${signatureText}`)
+        console.log(`${lh} ${getCurrentStringDate()} - publicKey: ${publicKeyText}`)
     }
     const getSignatureSolflare = async function () {
         const result = await solflare.signMessage(
@@ -166,7 +155,8 @@
         //    console.log(`${lh} - mineParams`, JSON.stringify(mineParams))
         //}
         const mineTimedOut = runTime > pond0xO.startTime + pond0xO.noClaimMaxTime
-        const wellLaunchVerification = runTime > pond0xO.startTime + pond0xO.wellLaunchTime
+        const notWellStartedCheck = runTime > pond0xO.startTime + pond0xO.wellLaunchTime
+        const inactiveMinerCheck = runTime > pond0xO.startTime + pond0xO.inactiveMiningTime
 
         if (mineBtn) {
             console.log(`${lh} ${getCurrentStringDate()} - start mining...`)
@@ -180,6 +170,24 @@
                 console.log(`${lh} ${getCurrentStringDate()} - reloading...`)
                 reloadMining(true)
             }
+            else if (inactiveMinerCheck) {
+                if (mineParams.unclaimed == '1.6m') {
+                    console.log(`${lh} ${getCurrentStringDate()} - unclaimed stuck at 1.6m.`)
+                    console.log(`${lh} ${getCurrentStringDate()} - reloading...`)
+                    reloadMining(true)
+                }
+            }
+            else if (notWellStartedCheck) {
+                if (mineParams.unclaimed == '1.1m') {
+                    console.log(`${lh} ${getCurrentStringDate()} - unclaimed stuck at 1.1m.`)
+                    console.log(`${lh} ${getCurrentStringDate()} - reloading...`)
+                    reloadMining(true)
+                }else if (mineParams.unclaimed == '100k') {
+                    console.log(`${lh} ${getCurrentStringDate()} - unclaimed stuck at 100k.`)
+                    console.log(`${lh} ${getCurrentStringDate()} - reloading...`)
+                    reloadMining(true)
+                }
+            }
         }
         else if (claimBtn) {
             if (mineParams.hashrate == '0.00h/s') {
@@ -192,24 +200,6 @@
                     },
                     getTimeMS(pond0xO.claimInterval)
                 )
-            }
-        }
-        else if (wellLaunchVerification) {
-            if (mineParams.unclaimed == '1.6m') {
-                console.log(`${lh} ${getCurrentStringDate()} - unclaimed stuck at 1.6m.`)
-                console.log(`${lh} ${getCurrentStringDate()} - noClaimMaxTime triggered.`)
-                console.log(`${lh} ${getCurrentStringDate()} - reloading...`)
-                reloadMining(true)
-            }else if (mineParams.unclaimed == '1.1m') {
-                console.log(`${lh} ${getCurrentStringDate()} - unclaimed stuck at 1.1m.`)
-                console.log(`${lh} ${getCurrentStringDate()} - noClaimMaxTime triggered.`)
-                console.log(`${lh} ${getCurrentStringDate()} - reloading...`)
-                reloadMining(true)
-            }else if (mineParams.unclaimed == '100k') {
-                console.log(`${lh} ${getCurrentStringDate()} - unclaimed stuck at 100k.`)
-                console.log(`${lh} ${getCurrentStringDate()} - noClaimMaxTime triggered.`)
-                console.log(`${lh} ${getCurrentStringDate()} - reloading...`)
-                reloadMining(true)
             }
         }
     }
@@ -230,7 +220,8 @@
         // while no claim action appearing
         // (stuck at 1.6m, connection error, miner updated...)
         noClaimMaxTime: 1800, // 30 minutes
-        wellLaunchTime: 120 // 2minutes
+        wellLaunchTime: 60, // 1 minute --> 1.1M & 100K cases
+        inactiveMiningTime: 300 // 5 minutes --> 1.6M inactive miners
     }
 
     console.log(`${lh} ${getCurrentStringDate()} - loading keys...`)
