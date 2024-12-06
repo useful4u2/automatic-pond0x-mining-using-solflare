@@ -230,7 +230,14 @@
             }
         } 
         else if (!claimBtn && !stopBtn && !mineBtn){
-            if (notWellStartedCheck) {
+            if (inactiveMinerCheck) {
+                if (mineParams.unclaimed == '1.6m') {
+                    console.log(`${lh} ${getCurrentStringDate()} - unclaimed stuck at 1.6m.`)
+                    console.log(`${lh} ${getCurrentStringDate()} - reloading...`)
+                    reloadMining(true)
+                }
+            }
+            else if (notWellStartedCheck) {
                 if (mineParams.unclaimed == '1.1m') {
                     console.log(`${lh} ${getCurrentStringDate()} - unclaimed stuck at 1.1m.`)
                     console.log(`${lh} ${getCurrentStringDate()} - reloading...`)
