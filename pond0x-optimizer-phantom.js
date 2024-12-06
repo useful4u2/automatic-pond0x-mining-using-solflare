@@ -31,8 +31,53 @@
     }
     const getCurrentStringDate = function () {
         var m = new Date();
-        return m.getUTCFullYear() +"/"+ (m.getUTCMonth()+1) +"/"+ m.getUTCDate() + " " + m.getUTCHours() + ":" + m.getUTCMinutes() + ":" + m.getUTCSeconds();
-    } 
+        // Formatage avec zéro à gauche pour les mois, jours, heures, minutes et secondes
+        const year = m.getUTCFullYear();
+        const month = (m.getUTCMonth() + 1).toString().padStart(2, '0'); // Mois, avec zéro à gauche
+        const day = m.getUTCDate().toString().padStart(2, '0'); // Jour, avec zéro à gauche
+        const hours = m.getUTCHours().toString().padStart(2, '0'); // Heures, avec zéro à gauche
+        const minutes = m.getUTCMinutes().toString().padStart(2, '0'); // Minutes, avec zéro à gauche
+        const seconds = m.getUTCSeconds().toString().padStart(2, '0'); // Secondes, avec zéro à gauche
+        // Retourner la date formatée
+        return `${year}/${month}/${day} ${hours}:${minutes}:${seconds}`;
+    }
+    let totalAmount = 0;
+    let startExecution = getCurrentStringDate();
+    // Fonction pour convertir un montant en chaîne (par exemple '134.5m' ou '1.68b') en nombre
+    function parseAmount(amountStr) {
+        const regex = /^(\d+(\.\d+)?)\s*(m|b)$/i;
+        const match = amountStr.match(regex);
+        
+        if (!match) {
+            throw new Error('Format de montant invalide');
+        }
+        
+        const value = parseFloat(match[1]);
+        const suffix = match[3].toLowerCase();
+        
+        // Conversion selon le suffixe
+        if (suffix === 'm') {
+            return value * 1_000_000; // Multiplie par 1 million
+        } else if (suffix === 'b') {
+            return value * 1_000_000_000; // Multiplie par 1 milliard
+        }
+        
+        return 0;
+    }
+    // Fonction pour ajouter un montant à la variable globale 'totalAmount'
+    function addToTotal(amountStr) {
+        const parsedAmount = parseAmount(amountStr);
+        totalAmount += parsedAmount;
+    }
+    // Fonction pour formater le montant total sous le format désiré (par exemple "134.5m" ou "1.68b")
+    function formatAmount(amount) {
+        if (amount >= 1_000_000_000) {
+            return (amount / 1_000_000_000).toFixed(2) + 'b'; // Si c'est un milliard
+        } else if (amount >= 1_000_000) {
+            return (amount / 1_000_000).toFixed(2) + 'm'; // Si c'est un million
+        }
+        return amount.toFixed(2); // Sinon, format simple
+    }
     // Get a dom node from his content text
     const searchNodeByContent = function (selector, text) {
         const nodes = document.querySelectorAll(selector)
@@ -172,9 +217,10 @@
         }
         else if (claimBtn) {
             if (mineParams.hashrate == '0.00h/s') {
-                console.log(`${lh} ${getCurrentStringDate()} - claiming ${mineParams.unclaimed} tokens...`)
+                addToTotal(mineParams.unclaimed)
+                console.log(`${lh} ${getCurrentStringDate()} - claiming ${mineParams.unclaimed} tokens - total mined ${formatAmount(totalAmount)} since ${startExecution}.`)
                 claimBtn.click()
-                console.log(`${lh} ${getCurrentStringDate()} - waiting ${pond0xO.claimInterval} secs...`)
+                console.log(`${lh} ${getCurrentStringDate()} - waiting ${pond0xO.claimInterval/60} mins.`)
                 setTimeout(function () {
                         console.log(`${lh} ${getCurrentStringDate()} - reloading...`)
                         reloadMining(true)
