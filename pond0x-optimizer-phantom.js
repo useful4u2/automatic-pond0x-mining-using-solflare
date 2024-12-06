@@ -32,13 +32,13 @@
     const getCurrentStringDate = function () {
         var m = new Date();
         // Formatage avec zéro à gauche pour les mois, jours, heures, minutes et secondes
-        const year = m.getUTCFullYear();
-        const month = (m.getUTCMonth() + 1).toString().padStart(2, '0'); // Mois, avec zéro à gauche
-        const day = m.getUTCDate().toString().padStart(2, '0'); // Jour, avec zéro à gauche
-        const hours = m.getUTCHours().toString().padStart(2, '0'); // Heures, avec zéro à gauche
-        const minutes = m.getUTCMinutes().toString().padStart(2, '0'); // Minutes, avec zéro à gauche
-        const seconds = m.getUTCSeconds().toString().padStart(2, '0'); // Secondes, avec zéro à gauche
-        // Retourner la date formatée
+        const year = m.getFullYear(); // Année locale
+        const month = (m.getMonth() + 1).toString().padStart(2, '0'); // Mois local, avec zéro à gauche
+        const day = m.getDate().toString().padStart(2, '0'); // Jour local, avec zéro à gauche
+        const hours = m.getHours().toString().padStart(2, '0'); // Heures locales, avec zéro à gauche
+        const minutes = m.getMinutes().toString().padStart(2, '0'); // Minutes locales, avec zéro à gauche
+        const seconds = m.getSeconds().toString().padStart(2, '0'); // Secondes locales, avec zéro à gauche
+        // Retourner la date formatée en heure locale
         return `${year}/${month}/${day} ${hours}:${minutes}:${seconds}`;
     }
     let totalAmount = 0;
