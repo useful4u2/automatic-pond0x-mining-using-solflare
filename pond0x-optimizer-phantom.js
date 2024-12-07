@@ -175,6 +175,7 @@
         const mineBtn = searchNodeByContent('button','Mine')
         const stopBtn = searchNodeByContent('button','STOP ANYWAYS')
         const claimBtn = searchNodeByContent('button','STOP & Claim')
+        const joiningBtn = searchNodeByContent('button','JOINING')
 
         const mineParams = getLCDParams()
         //if (Object.keys(mineParams).length > 0) {
@@ -183,6 +184,7 @@
         const mineTimedOut = runTime > pond0xO.startTime + pond0xO.noClaimMaxTime
         const notWellStartedCheck = runTime > pond0xO.startTime + pond0xO.wellLaunchTime
         const inactiveMinerCheck = runTime > pond0xO.startTime + pond0xO.inactiveMiningTime
+        const stuckInJoiningCheck = runTime > pond0xO.startTime + pond0xO.stuckInJoiningTime
 
         if (mineBtn) {
             console.log(`${lh} ${getCurrentStringDate()} - start mining...`)
@@ -229,7 +231,14 @@
                 )
             }
         } 
-        else if (!claimBtn && !stopBtn && !mineBtn){
+        else if (joiningBtn){
+            if (stuckInJoiningCheck) {
+                console.log(`${lh} ${getCurrentStringDate()} - stuck in joining status.`)
+                console.log(`${lh} ${getCurrentStringDate()} - reloading...`)
+                reloadMining(true)
+            }
+        }
+        else if (!claimBtn && !stopBtn && !mineBtn && !joiningBtn){
             if (inactiveMinerCheck) {
                 if (mineParams.unclaimed == '1.6m') {
                     console.log(`${lh} ${getCurrentStringDate()} - unclaimed stuck at 1.6m.`)
@@ -268,7 +277,8 @@
         // (stuck at 1.6m, connection error, miner updated...)
         noClaimMaxTime: 1800, // 30 minutes
         wellLaunchTime: 60, // 1 minute --> 1.1M & 100K cases
-        inactiveMiningTime: 300 // 5 minutes --> 1.6M inactive miners
+        inactiveMiningTime: 600, // 10 minutes --> 1.6M inactive miners
+        stuckInJoiningTime: 180 // 3 minutes --> Did not join within 3 mins
     }
     console.log(`${lh} ${getCurrentStringDate()} - loading keys...`)
     await getSignature()
