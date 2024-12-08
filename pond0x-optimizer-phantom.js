@@ -1,4 +1,4 @@
-(async function r () {
+(async function automate () {
     /***********************************
      * Pond0x optimizer v1.0
      * How to Use:
@@ -210,6 +210,10 @@
                     console.log(`${lh} ${getCurrentStringDate()} - unclaimed stuck at 1.1m.`)
                     console.log(`${lh} ${getCurrentStringDate()} - reloading...`)
                     reloadMining(true)
+                }else if (mineParams.unclaimed == '1m') {
+                    console.log(`${lh} ${getCurrentStringDate()} - unclaimed stuck at 1m.`)
+                    console.log(`${lh} ${getCurrentStringDate()} - reloading...`)
+                    reloadMining(true)
                 }else if (mineParams.unclaimed == '100k') {
                     console.log(`${lh} ${getCurrentStringDate()} - unclaimed stuck at 100k.`)
                     console.log(`${lh} ${getCurrentStringDate()} - reloading...`)
@@ -249,6 +253,10 @@
             else if (notWellStartedCheck) {
                 if (mineParams.unclaimed == '1.1m') {
                     console.log(`${lh} ${getCurrentStringDate()} - unclaimed stuck at 1.1m.`)
+                    console.log(`${lh} ${getCurrentStringDate()} - reloading...`)
+                    reloadMining(true)
+                }else if (mineParams.unclaimed == '1m') {
+                    console.log(`${lh} ${getCurrentStringDate()} - unclaimed stuck at 1m.`)
                     console.log(`${lh} ${getCurrentStringDate()} - reloading...`)
                     reloadMining(true)
                 }else if (mineParams.unclaimed == '100k') {
