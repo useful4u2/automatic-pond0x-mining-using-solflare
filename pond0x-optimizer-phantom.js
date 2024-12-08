@@ -283,7 +283,7 @@
         // Time in seconds to force reload 
         // while no claim action appearing
         // (stuck at 1.6m, connection error, miner updated...)
-        noClaimMaxTime: 1800, // 30 minutes
+        noClaimMaxTime: 2100, // 35 minutes
         wellLaunchTime: 60, // 1 minute --> 1.1M & 100K cases
         inactiveMiningTime: 600, // 10 minutes --> 1.6M inactive miners
         stuckInJoiningTime: 180 // 3 minutes --> Did not join within 3 mins
