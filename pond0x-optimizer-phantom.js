@@ -192,7 +192,7 @@
         }
         else if (stopBtn) {
             if (mineTimedOut) {
-                console.log(`${lh} ${getCurrentStringDate()} - noClaimMaxTime triggered.`)
+                console.log(`${lh} ${getCurrentStringDate()} - only ${mineParams.unclaimed} accumulated after ${pond0xO.noClaimMaxTime/60} mins.`)
                 console.log(`${lh} ${getCurrentStringDate()} - stop mining...`)
                 stopBtn.click()
                 console.log(`${lh} ${getCurrentStringDate()} - reloading...`)
