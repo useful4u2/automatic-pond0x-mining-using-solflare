@@ -42,6 +42,7 @@
         return `${year}/${month}/${day} ${hours}:${minutes}:${seconds}`;
     }
     let totalAmount = 0;
+    let totalSessionsDuration = 0;
     let startExecution = getCurrentStringDate();
     // Fonction pour convertir un montant en chaîne (par exemple '134.5m' ou '1.68b') en nombre
     function parseAmount(amountStr) {
@@ -185,6 +186,7 @@
         const notWellStartedCheck = runTime > pond0xO.startTime + pond0xO.wellLaunchTime
         const inactiveMinerCheck = runTime > pond0xO.startTime + pond0xO.inactiveMiningTime
         const stuckInJoiningCheck = runTime > pond0xO.startTime + pond0xO.stuckInJoiningTime
+        const currentSessionDuration = runTime - pond0xO.startTime
 
         if (mineBtn) {
             console.log(`${lh} ${getCurrentStringDate()} - start mining...`)
@@ -224,7 +226,9 @@
         else if (claimBtn) {
             if (mineParams.hashrate == '0.00h/s') {
                 addToTotal(mineParams.unclaimed)
-                console.log(`${lh} ${getCurrentStringDate()} - claiming ${mineParams.unclaimed} tokens - total mined ${formatAmount(totalAmount)} since ${startExecution}.`)
+                totalSessionsDuration = totalSessionsDuration + currentSessionDuration
+                console.log(`${lh} ${getCurrentStringDate()} - claiming ${mineParams.unclaimed} tokens, session duration ${currentSessionDuration/60} mins.`)
+                console.log(`${lh} ${getCurrentStringDate()} - total mined ${formatAmount(totalAmount)}, total sessions durations ${totalSessionsDuration/360} hrs ${(totalSessionsDuration%360)/60} mins.`)
                 claimBtn.click()
                 console.log(`${lh} ${getCurrentStringDate()} - waiting ${pond0xO.claimInterval/60} mins.`)
                 setTimeout(function () {
@@ -276,7 +280,7 @@
         // Delay in seconds between each run
         runInterval: 5, // each 5 seconds
         // Delay in seconds between each claim
-        claimInterval: 1260, // 21 minutes
+        claimInterval: 120, // 2 minutes
         // Delay in seconds between each page reloading
         // depends of your device performance 
         reloadInterval: 5, // 5 secondes
