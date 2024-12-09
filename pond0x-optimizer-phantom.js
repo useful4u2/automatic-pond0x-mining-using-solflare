@@ -227,8 +227,8 @@
             if (mineParams.hashrate == '0.00h/s') {
                 addToTotal(mineParams.unclaimed)
                 totalSessionsDuration = totalSessionsDuration + currentSessionDuration
-                console.log(`${lh} ${getCurrentStringDate()} - claiming ${mineParams.unclaimed} tokens, session duration ${(currentSessionDuration/60).toFixed(0)} mins.`)
-                console.log(`${lh} ${getCurrentStringDate()} - total mined ${formatAmount(totalAmount)}, total sessions durations ${(totalSessionsDuration/3600).toFixed(0)} hrs ${((totalSessionsDuration%3600)/60).toFixed(0)} mins.`)
+                console.log(`${lh} ${getCurrentStringDate()} - claiming ${mineParams.unclaimed} tokens, session duration ${Math.floor(currentSessionDuration/60)} mins.`)
+                console.log(`${lh} ${getCurrentStringDate()} - total mined ${formatAmount(totalAmount)}, total sessions durations ${Math.floor(totalSessionsDuration/3600)} hrs ${Math.floor((totalSessionsDuration%3600)/60)} mins since ${startExecution}.`)
                 claimBtn.click()
                 console.log(`${lh} ${getCurrentStringDate()} - waiting ${pond0xO.claimInterval/60} mins.`)
                 setTimeout(function () {
